@@ -1,0 +1,4 @@
+type,createdAt,updatedAt
+first,now(),now()
+second,now(),now()
+third,now(),now()

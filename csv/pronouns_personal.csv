@@ -1,0 +1,9 @@
+person_id,number_id,gender_id,subjective,objective,possessiveAttributive,possessivePredicate,reflexive,createdAt,updatedAt
+1,1,1,I,me,my,mine,myself,now(),now()
+1,2,1,we,us,our,ours,ourselves,now(),now()
+2,1,1,you,you,your,yours,yourself,now(),now()
+2,2,1,you,you,your,yours,yourselves,now(),now()
+3,1,2,he,him,his,his,himself,now(),now()
+3,1,3,she,her,her,hers,herself,now(),now()
+3,1,1,it,it,its,its,itself,now(),now()
+3,2,1,they,them,their,their,themselves,now(),now()

@@ -1,0 +1,5 @@
+type,createdAt(),updatedAt()
+singular,now(),now()
+plural,now(),now()
+either,now(),now()
+na,now(),now()

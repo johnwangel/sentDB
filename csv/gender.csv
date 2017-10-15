@@ -1,0 +1,4 @@
+type,createdAt,updatedAt
+neutral,now(),now()
+masculine,now(),now()
+feminine,now(),now()

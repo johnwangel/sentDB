@@ -1,0 +1,6 @@
+type,createdAt(),updatedAt()
+time,now(),now()
+place,now(),now()
+manner,now(),now()
+degree,now(),now()
+frequency,now(),now()

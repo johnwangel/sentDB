@@ -1,0 +1,5 @@
+type,createdAt(),updatedAt()
+simple,now(),now()
+medium,now(),now()
+complex,now(),now()
+monster,now(),now()

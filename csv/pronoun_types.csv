@@ -1,0 +1,5 @@
+type,createdAt,updatedAt
+relative,now(),now()
+demonstrative,now(),now()
+indefinite,now(),now()
+interrogative,now(),now()
