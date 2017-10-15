@@ -13,6 +13,6 @@ module.exports = (sequelize, DataTypes) => {
     tense_past2pp: DataTypes.STRING,
     tense_past3pp: DataTypes.STRING,
     past_part: DataTypes.STRING
-  };
+  });
   return verbs;
 };

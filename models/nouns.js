@@ -7,6 +7,6 @@ module.exports = (sequelize, DataTypes) => {
       },
     isPlural: DataTypes.BOOLEAN,
     plural: DataTypes.STRING
-  };
+  });
   return nouns;
 };

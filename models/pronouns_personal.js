@@ -9,7 +9,7 @@ module.exports = (sequelize, DataTypes) => {
     possessiveAttributive: DataTypes.STRING,
     possessivePredicate: DataTypes.STRING,
     reflexive: DataTypes.STRING
-  };
+  });
   Pronouns_personal.associate = function(models) {
     Pronouns_personal.belongsTo(models.person, {foreignKey: 'person_id'});
     Pronouns_personal.belongsTo(models.number, {foreignKey: 'number_id'});
