@@ -40,6 +40,7 @@ app.use(bodyParser.json());
 app.get('/api/random', (req, res) => {
 
   let posIndex = parseInt((Math.random()*10)+1);
+  //let posIndex = 6;
   let POS;
 
   switch(posIndex){
@@ -76,15 +77,60 @@ app.get('/api/random', (req, res) => {
       POS = Nouns;
   }
 
-  POS.findAll()
-  .then( words => {
-      let len = words.length;
-      let rand = parseInt(Math.random() * (len - 2) + 2);
-      POS.findOne({ where: { id: rand }})
+  switch(POS){
+    case PronPers:
+      let numb = parseInt((Math.random()*2) + 1);
+      let pers = parseInt((Math.random()*3) + 1);
+      let gend;
+      if (pers === 3 && numb === 1) {
+        gend = parseInt((Math.random()*3) + 2);
+      } else {
+        gend = 1;
+      }
+      let casID = parseInt((Math.random()*5) + 1);
+      let cas;
+      switch(casID){
+        case 1:
+          cas = "subjective";
+          break;
+        case 2:
+          cas = "objective";
+          break;
+        case 3:
+          cas = "possessiveAttributive";
+          break;
+        case 4:
+          cas = "possessivePredicate";
+          break;
+        case 5:
+          cas = "reflexive"
+          break;
+      }
+
+      POS.findOne({ where: { person_id: pers, number_id: numb, gender_id: gend }})
       .then( word => {
-        res.json(word);
+        let newWord = { person: word.person_id, number: word.number_id, gender: word.gender_id, case: cas, word: word[cas] };
+        res.json(newWord);
       })
-  });
+
+      break;
+
+
+    default:
+
+      POS.findAll()
+      .then( words => {
+          let len = words.length;
+          let rand = parseInt(Math.random() * (len - 2) + 2);
+          POS.findOne({ where: { id: rand }})
+          .then( word => {
+            res.json(word);
+          })
+      });
+
+  }
+
+
 });
 
 
