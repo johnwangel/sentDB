@@ -37,48 +37,75 @@ const Verbs = db.verbs;
 
 app.use(bodyParser.json());
 
+app.get('/api/init_tiles', (req, res) => {
+
+  let POS = getRandomPOS();
+
+  switch(POS.pos){
+    case PronPers:
+      POS.pos.findOne({ where: { person_id: POS.pers, number_id: POS.numb, gender_id: POS.gend }})
+      .then( word => {
+        let newWord = { person: word.person_id, number: word.number_id, gender: word.gender_id, case: POS.cas, word: word[POS.cas] };
+        res.json(newWord);
+      })
+      break;
+
+    default:
+      POS.pos.findAll()
+      .then( words => {
+          let len = words.length;
+          let rand = parseInt(Math.random() * (len - 2) + 2);
+          POS.pos.findOne({ where: { id: rand }})
+          .then( word => {
+            res.json(word);
+          })
+      });
+    }
+});
+
 app.get('/api/random', (req, res) => {
 
+  let POS = getRandomPOS();
+
+  switch(POS.pos){
+    case PronPers:
+      POS.pos.findOne({ where: { person_id: POS.pers, number_id: POS.numb, gender_id: POS.gend }})
+      .then( word => {
+        let newWord = { person: word.person_id, number: word.number_id, gender: word.gender_id, case: POS.cas, word: word[POS.cas] };
+        res.json(newWord);
+      })
+      break;
+
+    default:
+      POS.pos.findAll()
+      .then( words => {
+          let len = words.length;
+          let rand = parseInt(Math.random() * (len - 2) + 2);
+          POS.pos.findOne({ where: { id: rand }})
+          .then( word => {
+            res.json(word);
+          })
+      });
+  }
+
+});
+
+
+function getRandomPOS(){
   let posIndex = parseInt((Math.random()*10)+1);
-  //let posIndex = 6;
-  let POS;
 
   switch(posIndex){
     case 1:
-      POS = PronOth;
-      break;
+      return { pos: PronOth };
     case 2:
-      POS = Adj;
-      break;
+      return { pos: Adj };
     case 3:
-      POS = Verbs;
-      break;
+      return { pos: Verbs };
     case 4:
-      POS =  Nouns;
-      break;
+      return { pos: Nouns };
     case 5:
-      POS =  Adv;
-      break;
+      return { pos: Adv };
     case 6:
-      POS =  PronPers;
-      break;
-    case 7:
-      POS =  Art;
-      break;
-    case 8:
-      POS =  Prep;
-      break;
-    case 9:
-      POS =  Conj;
-      break;
-    case 10:
-      POS =  Intj;
-    default:
-      POS = Nouns;
-  }
-
-  switch(POS){
-    case PronPers:
       let numb = parseInt((Math.random()*2) + 1);
       let pers = parseInt((Math.random()*3) + 1);
       let gend;
@@ -106,36 +133,18 @@ app.get('/api/random', (req, res) => {
           cas = "reflexive"
           break;
       }
-
-      POS.findOne({ where: { person_id: pers, number_id: numb, gender_id: gend }})
-      .then( word => {
-        let newWord = { person: word.person_id, number: word.number_id, gender: word.gender_id, case: cas, word: word[cas] };
-        res.json(newWord);
-      })
-
-      break;
-
-
+      return  { pos: PronPers, numb, pers, gend, cas };
+    case 7:
+      return { pos: Art };
+    case 8:
+      return { pos: Prep };
+    case 9:
+      return { pos: Conj };
+    case 10:
+      return { pos: Intj };
     default:
-
-      POS.findAll()
-      .then( words => {
-          let len = words.length;
-          let rand = parseInt(Math.random() * (len - 2) + 2);
-          POS.findOne({ where: { id: rand }})
-          .then( word => {
-            res.json(word);
-          })
-      });
-
+      return { pos: Nouns };
   }
-
-
-});
-
-
-function getCount(POS){
-
 }
 
 app.listen(PORT, () => {
