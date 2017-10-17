@@ -37,41 +37,25 @@ const Verbs = db.verbs;
 
 app.use(bodyParser.json());
 
-app.get('/api/init_tiles', (req, res) => {
-
-  let POS = getRandomPOS();
-
-  switch(POS.pos){
-    case PronPers:
-      POS.pos.findOne({ where: { person_id: POS.pers, number_id: POS.numb, gender_id: POS.gend }})
-      .then( word => {
-        let newWord = { person: word.person_id, number: word.number_id, gender: word.gender_id, case: POS.cas, word: word[POS.cas] };
-        res.json(newWord);
-      })
-      break;
-
-    default:
-      POS.pos.findAll()
-      .then( words => {
-          let len = words.length;
-          let rand = parseInt(Math.random() * (len - 2) + 2);
-          POS.pos.findOne({ where: { id: rand }})
-          .then( word => {
-            res.json(word);
-          })
-      });
-    }
-});
-
 app.get('/api/random', (req, res) => {
 
   let POS = getRandomPOS();
 
+  let includeObj = [];
+
+  if (POS.joins){
+    for (var i = 0; i < POS.joins.length; i++) {
+      includeObj[i] = { model: POS.joins[i] };
+    }
+  }
+
+  console.log("INCLUDE OBJECT ", includeObj);
+
   switch(POS.pos){
     case PronPers:
       POS.pos.findOne({ where: { person_id: POS.pers, number_id: POS.numb, gender_id: POS.gend }})
       .then( word => {
-        let newWord = { person: word.person_id, number: word.number_id, gender: word.gender_id, case: POS.cas, word: word[POS.cas] };
+        let newWord = { pos: POS.label, person: word.person_id, number: word.number_id, gender: word.gender_id, case: POS.cas, word: word[POS.cas] };
         res.json(newWord);
       })
       break;
@@ -81,9 +65,27 @@ app.get('/api/random', (req, res) => {
       .then( words => {
           let len = words.length;
           let rand = parseInt(Math.random() * (len - 2) + 2);
-          POS.pos.findOne({ where: { id: rand }})
+          let query =  {where: { id: rand }}
+          if (includeObj.length !== 0 ) query.include = includeObj;
+          POS.pos.findOne(query)
           .then( word => {
-            res.json(word);
+            let newWord = word.dataValues;
+            newWord.pos = POS.label;
+            delete newWord.createdAt;
+            delete newWord.updatedAt;
+            if (newWord.adverb_type){
+              let type = newWord.adverb_type.type;
+              newWord.adverb_type = type;
+            }
+            if (newWord.adjective_type) {
+              let type = newWord.adjective_type.type;
+              newWord.adjective_type = type;
+            }
+            if (newWord.adj_comparison_type) {
+              let type = newWord.adj_comparison_type.type;
+              newWord.adj_comparison_type = type;
+            }
+            res.json(newWord);
           })
       });
   }
@@ -92,19 +94,19 @@ app.get('/api/random', (req, res) => {
 
 
 function getRandomPOS(){
-  let posIndex = parseInt((Math.random()*10)+1);
-
+  //let posIndex = parseInt((Math.random()*10)+1);
+  let posIndex = 2;
   switch(posIndex){
     case 1:
-      return { pos: PronOth };
+      return { pos: PronOth, label: "pronoun", joins: [PronTypes, Numb]};
     case 2:
-      return { pos: Adj };
+      return { pos: Adj, label: "adjective", joins: [AdjComp, AdjType] };
     case 3:
-      return { pos: Verbs };
+      return { pos: Verbs, label: "verb"  };
     case 4:
-      return { pos: Nouns };
+      return { pos: Nouns, label: "noun"  };
     case 5:
-      return { pos: Adv };
+      return { pos: Adv, label: "adverb", joins: [AdvType]  };
     case 6:
       let numb = parseInt((Math.random()*2) + 1);
       let pers = parseInt((Math.random()*3) + 1);
@@ -133,17 +135,17 @@ function getRandomPOS(){
           cas = "reflexive"
           break;
       }
-      return  { pos: PronPers, numb, pers, gend, cas };
+      return  { pos: PronPers, numb, pers, gend, cas, label: "pronoun", joins: [Person, Numb, Gender] };
     case 7:
-      return { pos: Art };
+      return { pos: Art, label: "article"  };
     case 8:
-      return { pos: Prep };
+      return { pos: Prep, label: "preposition"  };
     case 9:
-      return { pos: Conj };
+      return { pos: Conj, label: "conjunction", joins: [ConjType]  };
     case 10:
-      return { pos: Intj };
+      return { pos: Intj, label: "interjection"  };
     default:
-      return { pos: Nouns };
+      return { pos: Nouns, label: "noun" };
   }
 }
 
