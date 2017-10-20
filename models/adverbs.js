@@ -5,7 +5,7 @@ module.exports = (sequelize, DataTypes) => {
     type_id: DataTypes.INTEGER
   });
   Adverbs.associate = function(models) {
-    Adverbs.belongsTo(models.adverb_type, {foreignKey: 'type_id'});
+    Adverbs.belongsTo(models.adverb_types, {foreignKey: 'type_id'});
   };
   return Adverbs;
 };

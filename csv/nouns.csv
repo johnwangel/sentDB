@@ -1,4 +1,4 @@
-word,IsPlural,plural,createdAt(),updatedAt()
+word,isPlural,plural,createdAt(),updatedAt()
 air,t,,now(),now()
 area,f,,now(),now()
 art,f,,now(),now()

@@ -1,10 +1,10 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
-  var Gender = sequelize.define('gender', {
+  var Gender = sequelize.define('genders', {
     type: DataTypes.STRING
   });
   Gender.associate = function(models) {
-      Gender.hasMany(models.pronouns_personal, {foreignKey: 'gender_id'});
+      Gender.hasMany(models.pronouns_personals, {foreignKey: 'gender_id'});
   };
   return Gender;
 };

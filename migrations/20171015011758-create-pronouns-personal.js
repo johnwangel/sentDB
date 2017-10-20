@@ -10,15 +10,15 @@ module.exports = {
       },
       person_id: {
         type: Sequelize.INTEGER,
-        references: { model: 'person', key: 'id'}
+        references: { model: 'persons', key: 'id'}
       },
       number_id: {
         type: Sequelize.INTEGER,
-        references: { model: 'number', key: 'id'}
+        references: { model: 'numbers', key: 'id'}
       },
       gender_id: {
         type: Sequelize.INTEGER,
-        references: { model: 'gender', key: 'id'}
+        references: { model: 'genders', key: 'id'}
       },
       subjective: {
         type: Sequelize.STRING

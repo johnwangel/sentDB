@@ -1,7 +1,7 @@
 'use strict';
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable('pronoun_types', {
+    return queryInterface.createTable('genders', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -9,8 +9,7 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       type: {
-        type: Sequelize.STRING,
-        allowNull: false
+        type: Sequelize.STRING
       },
       createdAt: {
         allowNull: false,
@@ -23,6 +22,6 @@ module.exports = {
     });
   },
   down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable('pronoun_types');
+    return queryInterface.dropTable('genders');
   }
 };

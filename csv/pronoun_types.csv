@@ -1,5 +1,7 @@
-type,createdAt,updatedAt
-relative,now(),now()
-demonstrative,now(),now()
-indefinite,now(),now()
-interrogative,now(),now()
+,type,createdAt,updatedAt
+1,relative,now(),now()
+2,demonstrative,now(),now()
+3,indefinite,now(),now()
+4,interrogative,now(),now()
+5,relative or demonstrative,now(),now()
+6,relative or interrogative,now(),now()

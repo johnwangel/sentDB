@@ -1,18 +1,23 @@
 {
-  "name": "sentencedb",
+  "name": "sentenced_db",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "dependencies": {
-    "body-parser": "^1.18.2",
-    "pg": "^7.3.0",
-    "pg-hstore": "^2.3.2",
-    "sequelize-cli": "^3.0.0"
-  },
-  "devDependencies": {},
+  "description": "Database for Sentenced App",
+  "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
-  "license": "ISC"
+  "repository": {
+    "type": "git",
+    "url": "sentDB"
+  },
+  "author": "john atkins",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "express": "^4.16.2",
+    "pg": "^7.3.0",
+    "pg-hstore": "^2.3.2",
+    "sequelize": "^4.15.0",
+    "sequelize-cli": "^3.0.0"
+  }
 }

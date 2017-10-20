@@ -9,7 +9,7 @@ const AdjComp = db.adj_comparison_types;
 const AdjType = db.adjective_types;
 const Adj = db.adjectives;
 
-const AdvType = db.adverb_type;
+const AdvType = db.adverb_types;
 const Adv = db.adverbs;
 
 const Art = db.articles;
@@ -23,12 +23,12 @@ const Nouns = db.nouns;
 
 const Prep = db.prepositions;
 
-const Gender = db.gender;
-const Numb = db.number;
-const Person = db.person;
-const PronTypes = db.pronoun_types;
-const PronOth = db.pronouns_other;
-const PronPers = db.pronouns_personal;
+const Gender = db.genders;
+const Numb = db.numbers;
+const Person = db.persons;
+// const PronTypes = db.pronoun_types;
+const PronOth = db.pronouns_others;
+const PronPers = db.pronouns_personals;
 
 const SentCompl = db.sentence_complexity;
 const Sent = db.sentences;
@@ -49,13 +49,23 @@ app.get('/api/random', (req, res) => {
     }
   }
 
-  console.log("INCLUDE OBJECT ", includeObj);
-
   switch(POS.pos){
     case PronPers:
-      POS.pos.findOne({ where: { person_id: POS.pers, number_id: POS.numb, gender_id: POS.gend }})
+
+      let query =  {where: { person_id: POS.pers, number_id: POS.numb, gender_id: POS.gend }}
+      if (includeObj.length !== 0 ) query.include = includeObj;
+
+      POS.pos.findOne(query)
       .then( word => {
-        let newWord = { pos: POS.label, person: word.person_id, number: word.number_id, gender: word.gender_id, case: POS.cas, word: word[POS.cas] };
+        let newWord = {
+          pos: 'pronoun',
+          word: word[POS.cas],
+          pronoun_type: 'personal',
+          person: word.person.dataValues.type,
+          number: word.number.dataValues.type,
+          gender: word.gender.dataValues.type,
+          case: POS.cas,
+        };
         res.json(newWord);
       })
       break;
@@ -73,18 +83,91 @@ app.get('/api/random', (req, res) => {
             newWord.pos = POS.label;
             delete newWord.createdAt;
             delete newWord.updatedAt;
-            if (newWord.adverb_type){
-              let type = newWord.adverb_type.type;
-              newWord.adverb_type = type;
+
+            if (newWord.pos === 'adjective') {
+              let newWordObj = {
+                pos: newWord.pos,
+                id: newWord.id,
+                word: newWord.word,
+                type: newWord.adjective_type.type,
+                comparison_type: newWord.adj_comparison_type.type,
+              }
+              if (newWord.adj_comparison_type.type === 'irregular'){
+                newWordObj.comparative = newWord.altcomp;
+                newWordObjsuperlative = newWord.altsup;
+              }
+              newWord = newWordObj;
             }
-            if (newWord.adjective_type) {
-              let type = newWord.adjective_type.type;
-              newWord.adjective_type = type;
+
+            if (newWord.pos === 'adverb'){
+              let newWordObj = {
+                pos: newWord.pos,
+                id: newWord.id,
+                word: newWord.word,
+                type: newWord.adverb_type.type,
+              }
+              newWord = newWordObj;
             }
-            if (newWord.adj_comparison_type) {
-              let type = newWord.adj_comparison_type.type;
-              newWord.adj_comparison_type = type;
+
+            if (newWord.pos === 'conjunction'){
+              let newWordObj = {
+                pos: newWord.pos,
+                id: newWord.id,
+                word: newWord.word,
+                type: newWord.conjunction_type.type,
+              }
+              newWord = newWordObj;
             }
+
+            if (newWord.pos === 'pronoun' && !newWord.gender) {
+              let newWordObj = {
+                pos: newWord.pos,
+                id: newWord.id,
+                word: newWord.word,
+                pronoun_type: newWord.type,
+                number: newWord.number.type
+              }
+              newWord = newWordObj;
+            }
+
+            if (newWord.pos === 'verb') {
+              let newWordObj = {
+                pos: newWord.pos,
+                id: newWord.id,
+                word: newWord.word,
+                auxilliary: newWord.is_aux,
+                active: newWord.is_active,
+                passive: newWord.is_passive,
+              }
+              if (newWord.tense_pres3ps !== null ) newWordObj.present_tense_third_person_singular = newWord.tense_pres3ps;
+              if (newWord.tense_past1ps !== null ) newWordObj.past_tense_first_person_singular = newWord.tense_past1ps;
+              if (newWord.tense_past2ps !== null ) newWordObj.past_tense_second_person_singular = newWord.tense_past2ps;
+              if (newWord.tense_past3ps !== null ) newWordObj.past_tense_third_person_singular = newWord.tense_past3ps;
+              if (newWord.tense_past1pp !== null ) newWordObj.past_tense_first_person_plural = newWord.tense_past1pp;
+              if (newWord.tense_past2pp !== null ) newWordObj.past_tense_second_person_plural = newWord.tense_past2pp;
+              if (newWord.tense_past3pp !== null ) newWordObj.past_tense_third_person_plural = newWord.tense_past3pp;
+
+              if (newWord.word === "be") {
+                newWordObj.present_tense_first_person_singular = 'am';
+                newWordObj.present_tense_second_person_singular = 'are';
+                newWordObj.present_tense_first_person_plural = 'are';
+                newWordObj.present_tense_second_person_plural = 'are';
+                newWordObj.present_tense_third_person_plural = 'are';
+              }
+              newWord = newWordObj;
+            }
+
+            if (newWord.pos === 'noun') {
+              let newWordObj = {
+                pos: newWord.pos,
+                id: newWord.id,
+                word: newWord.word,
+                is_plural: newWord.isPlural,
+              }
+              if (newWord.plural !== null ) newWordObj.irregular_plural = newWord.plural;
+              newWord = newWordObj;
+            }
+
             res.json(newWord);
           })
       });
@@ -95,10 +178,10 @@ app.get('/api/random', (req, res) => {
 
 function getRandomPOS(){
   //let posIndex = parseInt((Math.random()*10)+1);
-  let posIndex = 2;
+  let posIndex = 3;
   switch(posIndex){
     case 1:
-      return { pos: PronOth, label: "pronoun", joins: [PronTypes, Numb]};
+      return { pos: PronOth, label: "pronoun", joins: [Numb]};
     case 2:
       return { pos: Adj, label: "adjective", joins: [AdjComp, AdjType] };
     case 3:
