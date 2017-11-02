@@ -175,10 +175,9 @@ app.get('/api/random', (req, res) => {
 
 });
 
-
 function getRandomPOS(){
-  //let posIndex = parseInt((Math.random()*10)+1);
-  let posIndex = 3;
+  let posIndex = parseInt((Math.random()*10)+1);
+  // let posIndex = 3;
   switch(posIndex){
     case 1:
       return { pos: PronOth, label: "pronoun", joins: [Numb]};
