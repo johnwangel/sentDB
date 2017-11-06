@@ -37,6 +37,11 @@ const Verbs = db.verbs;
 
 app.use(bodyParser.json());
 
+app.get('/api/sentence', (req, res) => {
+  console.log(mySent);
+  res.json(mySent);
+});
+
 app.get('/api/random', (req, res) => {
 
   let POS = getRandomPOS();
@@ -176,8 +181,8 @@ app.get('/api/random', (req, res) => {
 });
 
 function getRandomPOS(){
-  let posIndex = parseInt((Math.random()*10)+1);
-  // let posIndex = 3;
+  // let posIndex = parseInt((Math.random()*10)+1);
+  let posIndex = 3;
   switch(posIndex){
     case 1:
       return { pos: PronOth, label: "pronoun", joins: [Numb]};
@@ -235,3 +240,32 @@ app.listen(PORT, () => {
   console.log(`listening on ${PORT}`);
 });
 
+const sentence = [
+  { id: 1, pos: 'article', word: 'the', word_id: 3, modifies: 3, },
+  { id: 2, pos: 'adjective', word: 'nicest', word_id: 205, superlative: true, modifies: 3, },
+  { id: 3, pos: 'noun', word: 'thing', word_id: 100, plural: false, agreement: 8, },
+  { id: 4, pos: 'pronoun_personal', word: 'I', person: 1, number: 1, gender: 1, case: 'subjective', agreement: 5, clause_id: 1 },
+  { id: 5, pos: 'verb', word: 'can say', id: 64, agreement: 4, modal: true, clause_id: 1, phrase_id: 1, },
+  { id: 6, pos: 'preposition', word: 'about', id: 2, phrase_id: 2 },
+  { id: 7, pos: 'pronoun_personal', word: 'her', person: 3, number: 1, gender: 3, case: 'objective', phrase_id: 2 },
+  { id: 8, pos: 'verb', word: 'is', id: 93, tense: 'present', agreement: 3 },
+  { id: 9, pos: 'pronoun_other', word: 'all', id: 1, agreement: 18, clause_id: 2 },
+  { id: 10, pos: 'pronoun_personal', word: 'her', person: 3, number: 1, gender: 3, case: 'possessive', modifies: 17, clause_id: 2, phrase_id: 2  },
+  { id: 11, pos: 'noun', word: 'tattoos', id: 115, plural: true, agreement: 12, clause_id: 2, phrase_id: 2 },
+  { id: 12, pos: 'verb', word: 'are spelled', id: 93, tense: 'present', voice: 'passive', agreement: 11, clause_id: 2,  },
+  { id: 13, pos: 'adverb', word: 'correctly', id: 41, modifies: 12, clause_id: 2, },
+  { id: 14, pos: 'punctuation', word: '.'}
+]
+
+const metadata = {
+  clauses: [
+    { id: 1, type: 'adjectival', modifies: 3 },
+    { id: 2, type: 'nominative', func: 'direct object' },
+  ],
+  phrases: [
+    { id: 1, type: 'preposition', func: 'adverbial', modifies: 5 },
+    { id: 2, type: 'preposition', func: 'adjectival', modifies: 9 },
+  ],
+}
+
+const mySent = { sentence, metadata };
