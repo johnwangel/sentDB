@@ -6,6 +6,8 @@ const fs = require('fs');
 const db = require('./models');
 const bodyParser = require('body-parser');
 
+const Games = db.games;
+
 const AdjComp = db.adj_comparison_types;
 const AdjType = db.adjective_types;
 const Adj = db.adjectives;
@@ -36,7 +38,49 @@ const Sent = db.sentences;
 
 const Verbs = db.verbs;
 
-app.use(bodyParser.json());
+var jsonParser = bodyParser.json()
+
+var urlencodedParser = bodyParser.urlencoded({ extended: false })
+
+app.post('/api/save_game', jsonParser, (req, res) => {
+  let gameID = req.body.game_id;
+
+  let propValue;
+  for (prop in req.body){
+    if (prop !== 'game_id') {
+      propValue = prop;
+    }
+  }
+
+  Games.findById(gameID)
+  .then( game => {
+    let gameState = game.game_state;
+    gameState.game[propValue] = req.body[propValue];
+    Games.update(
+      { game_state: gameState },
+      { where: { id: gameID } }
+    )
+    .then(result => res.json(result) )
+    .error(err =>
+      console.log("ERROR ", err)
+    )
+  });
+
+})
+
+app.get('/api/newGame', (req, res) => {
+  Games.create({
+    user_id: 1,
+    game_state: { game: {} },
+  })
+  .then(game => {
+      res.json(game);
+    })
+  .catch(err => {
+      console.log(err);
+    });
+});
+
 
 app.get('/api/sentence', (req, res) => {
   res.json(mySent);
