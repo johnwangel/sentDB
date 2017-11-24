@@ -1,4 +1,5 @@
 const express = require('express');
+const moment = require('moment');
 const app = express();
 const sequelize = require('sequelize');
 const PORT = process.env.PORT || 3000;
@@ -42,6 +43,17 @@ var jsonParser = bodyParser.json()
 
 var urlencodedParser = bodyParser.urlencoded({ extended: false })
 
+
+app.post('/api/active_game', jsonParser, (req, res) => {
+  console.log("REQ BODY", req.body)
+
+  let gameID = req.body.game_id;
+  Games.findById(gameID)
+  .then( game => {
+    res.json(game.game_state.game);
+  })
+})
+
 app.post('/api/save_game', jsonParser, (req, res) => {
   let gameID = req.body.game_id;
 
@@ -65,8 +77,26 @@ app.post('/api/save_game', jsonParser, (req, res) => {
       console.log("ERROR ", err)
     )
   });
-
 })
+
+app.post('/api/get_games', jsonParser, (req, res) => {
+  Games.findAll( {where : { user_id: req.body.user_id}} )
+  .then( response => {
+      let gameArray=[];
+      response.forEach( game => {
+        let game_id = game.id;
+        let time = moment(game.updatedAt).fromNow();
+        let sentence = '';
+        let sentence_array = game.game_state.game.sentence;
+        sentence_array.forEach( word => {
+          sentence += word.word + ' ';
+        })
+        gameArray.push({ game_id, sentence, time })
+      })
+      res.send( { games: gameArray } )
+  })
+  .catch( err => res.send());
+});
 
 app.get('/api/newGame', (req, res) => {
   Games.create({
