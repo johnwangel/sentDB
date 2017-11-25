@@ -45,8 +45,6 @@ var urlencodedParser = bodyParser.urlencoded({ extended: false })
 
 
 app.post('/api/active_game', jsonParser, (req, res) => {
-  console.log("REQ BODY", req.body)
-
   let gameID = req.body.game_id;
   Games.findById(gameID)
   .then( game => {
@@ -84,6 +82,7 @@ app.post('/api/get_games', jsonParser, (req, res) => {
   .then( response => {
       let gameArray=[];
       response.forEach( game => {
+        console.log("GAME ", game.id)
         let game_id = game.id;
         let time = moment(game.updatedAt).fromNow();
         let sentence = '';
@@ -91,9 +90,11 @@ app.post('/api/get_games', jsonParser, (req, res) => {
         sentence_array.forEach( word => {
           sentence += word.word + ' ';
         })
+        console.log("SENTENCE ARRAY ", sentence)
         gameArray.push({ game_id, sentence, time })
       })
-      res.send( { games: gameArray } )
+      console.log("GAME ARRAY ", gameArray)
+      res.json( { games: gameArray } )
   })
   .catch( err => res.send());
 });
@@ -110,7 +111,6 @@ app.get('/api/newGame', (req, res) => {
       console.log(err);
     });
 });
-
 
 app.get('/api/sentence', (req, res) => {
   res.json(mySent);
@@ -250,7 +250,6 @@ app.get('/api/random', (req, res) => {
               if (newWord.plural !== null ) newWordObj.irregular_plural = newWord.plural;
               newWord = newWordObj;
             }
-
             res.json(newWord);
           })
       });
