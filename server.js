@@ -4,10 +4,14 @@ const app = express();
 const sequelize = require('sequelize');
 const PORT = process.env.PORT || 3000;
 const fs = require('fs');
+const passport = require('passport');
+const session = require('express-session');
+const RedisStore = require('connect-redis')(session);
 const db = require('./models');
 const bodyParser = require('body-parser');
 
 const Games = db.games;
+const Users = db.users;
 
 const AdjComp = db.adj_comparison_types;
 const AdjType = db.adjective_types;
@@ -39,10 +43,67 @@ const Sent = db.sentences;
 
 const Verbs = db.verbs;
 
-var jsonParser = bodyParser.json()
+const saltRounds = 10;
 
+require('./passport')();
+
+app.use(express.static('public'));
+
+app.use(
+  session({
+    store: new RedisStore(),
+    secret: 'run with the devil',
+    resave: false,
+    saveUninitialized: false
+  })
+);
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+var jsonParser = bodyParser.json()
 var urlencodedParser = bodyParser.urlencoded({ extended: false })
 
+//create and respond with new user
+app.post('/api/register', createNewUser);
+
+//create and respond with new user
+app.post('/api/login', loginUser);
+
+//post/
+function createNewUser(req, res) {
+  bcrypt.genSalt(saltRounds, function(err, salt) {
+    bcrypt.hash(req.body.password, salt, function(err, hash) {
+      Users.create({
+        name: req.body.username,
+        password: hash,
+        first_name: req.body.first_name,
+        last_name: req.body.last_name,
+        email: req.body.email,
+      })
+      .then(user => {
+        res.json(user);
+      })
+      .catch(err => {
+        return res.json(err);
+      });
+    });
+  });
+}
+
+function loginUser(req, res) {
+  passport.authenticate('local',
+    (err, user) => {
+      if (err) return res.status(500).json({ err });
+      if (!user) return res.status(401).json({ message: 'invalid' });
+
+      req.logIn(user, error => {
+        if (err) return res.json({ error });
+        console.log("USERNAME", user.dataValues)
+        return res.status(200).json(user.dataValues);
+      });
+  })(req, res);
+}
 
 app.post('/api/active_game', jsonParser, (req, res) => {
   let gameID = req.body.game_id;
@@ -336,8 +397,6 @@ const metadata = {
   ],
 }
 
-
-
 // const sentence = [
 //   { id: 1, pos: 'article', word: 'the', word_id: 3, modifies: 3, },
 //   { id: 2, pos: 'adjective', word: 'nicest', word_id: 205, superlative: true, modifies: 3, },
@@ -367,8 +426,6 @@ const metadata = {
 // }
 
 const mySent = { sentence, metadata };
-
-
 
 const myStore = {
   "stamps":
