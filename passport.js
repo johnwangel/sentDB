@@ -19,7 +19,7 @@ module.exports = function() {
   passport.use(
     'local',
     new LocalStrategy(function(username, password, done) {
-      Users.findOne({ where: { name: username } })
+      Users.findOne({ where: { username: username } })
         .then(user => {
           if (!user) return done(null, false);
           bcrypt.compare(password, user.password, (err, res) => {

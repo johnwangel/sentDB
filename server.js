@@ -9,6 +9,7 @@ const session = require('express-session');
 const RedisStore = require('connect-redis')(session);
 const db = require('./models');
 const bodyParser = require('body-parser');
+const bcrypt = require('bcrypt');
 
 const Games = db.games;
 const Users = db.users;
@@ -65,17 +66,11 @@ var jsonParser = bodyParser.json()
 var urlencodedParser = bodyParser.urlencoded({ extended: false })
 
 //create and respond with new user
-app.post('/api/register', createNewUser);
-
-//create and respond with new user
-app.post('/api/login', loginUser);
-
-//post/
-function createNewUser(req, res) {
+app.post('/api/register', jsonParser, (req, res) => {
   bcrypt.genSalt(saltRounds, function(err, salt) {
     bcrypt.hash(req.body.password, salt, function(err, hash) {
       Users.create({
-        name: req.body.username,
+        username: req.body.username,
         password: hash,
         first_name: req.body.first_name,
         last_name: req.body.last_name,
@@ -89,21 +84,20 @@ function createNewUser(req, res) {
       });
     });
   });
-}
+});
 
-function loginUser(req, res) {
-  passport.authenticate('local',
-    (err, user) => {
+//create and respond with new user
+app.post('/api/login', jsonParser, (req, res) => {
+  passport.authenticate('local', (err, user) => {
       if (err) return res.status(500).json({ err });
       if (!user) return res.status(401).json({ message: 'invalid' });
 
-      req.logIn(user, error => {
-        if (err) return res.json({ error });
-        console.log("USERNAME", user.dataValues)
-        return res.status(200).json(user.dataValues);
+      req.logIn( user, (err) => {
+        if (err) return res.json({ err });
+        return res.status(200).json(user);
       });
   })(req, res);
-}
+});
 
 app.post('/api/active_game', jsonParser, (req, res) => {
   let gameID = req.body.game_id;
@@ -143,7 +137,6 @@ app.post('/api/get_games', jsonParser, (req, res) => {
   .then( response => {
       let gameArray=[];
       response.forEach( game => {
-        console.log("GAME ", game.id)
         let game_id = game.id;
         let time = moment(game.updatedAt).fromNow();
         let sentence = '';
@@ -151,10 +144,8 @@ app.post('/api/get_games', jsonParser, (req, res) => {
         sentence_array.forEach( word => {
           sentence += word.word + ' ';
         })
-        console.log("SENTENCE ARRAY ", sentence)
         gameArray.push({ game_id, sentence, time })
       })
-      console.log("GAME ARRAY ", gameArray)
       res.json( { games: gameArray } )
   })
   .catch( err => res.send());
