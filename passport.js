@@ -6,12 +6,17 @@ let db = require('./models');
 let Users = db.users;
 
 module.exports = function() {
+
   passport.serializeUser((user, done) => {
     done(null, user.id);
   });
 
   passport.deserializeUser((userId, done) => {
-    Users.findById(userId).then(data => done(null, data)).catch(err => {
+    Users.findById(userId)
+    .then(data => {
+      done(null, data)
+    })
+    .catch(err => {
       done(err, false);
     });
   });

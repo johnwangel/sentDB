@@ -65,6 +65,12 @@ app.use(passport.session());
 var jsonParser = bodyParser.json()
 var urlencodedParser = bodyParser.urlencoded({ extended: false })
 
+app.get('/api/logout', jsonParser, (req, res) => {
+  req.logout()
+  req.session.destroy();
+  res.send( { message: 'Successfully logged out' } );
+})
+
 //create and respond with new user
 app.post('/api/register', jsonParser, (req, res) => {
   bcrypt.genSalt(saltRounds, function(err, salt) {
@@ -77,7 +83,7 @@ app.post('/api/register', jsonParser, (req, res) => {
         email: req.body.email,
       })
       .then(user => {
-        res.json(user);
+        res.json(user.dataValues);
       })
       .catch(err => {
         return res.json(err);
@@ -85,6 +91,12 @@ app.post('/api/register', jsonParser, (req, res) => {
     });
   });
 });
+
+app.get('/api/auth', jsonParser, (req, res) => {
+  let id = req.user ? req.user.id : null;
+  let username = req.user ? req.user.username : null;
+  res.json({id, username })
+})
 
 //create and respond with new user
 app.post('/api/login', jsonParser, (req, res) => {
@@ -153,7 +165,7 @@ app.post('/api/get_games', jsonParser, (req, res) => {
 
 app.get('/api/newGame', (req, res) => {
   Games.create({
-    user_id: 1,
+    user_id: req.user.id,
     game_state: { game: {} },
   })
   .then(game => {
