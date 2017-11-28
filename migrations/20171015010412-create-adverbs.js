@@ -17,6 +17,9 @@ module.exports = {
         type: Sequelize.INTEGER,
         references: { model: 'adverb_types', key: 'id'}
       },
+      category: {
+        type: Sequelize.STRING
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

@@ -1,4 +1,4 @@
-type,createdAt(),updatedAt()
+complexity,createdAt(),updatedAt()
 simple,now(),now()
 medium,now(),now()
 complex,now(),now()

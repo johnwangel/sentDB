@@ -6,7 +6,8 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false
       },
     isPlural: DataTypes.BOOLEAN,
-    plural: DataTypes.STRING
+    plural: DataTypes.STRING,
+    category: DataTypes.STRING,
   });
   return nouns;
 };

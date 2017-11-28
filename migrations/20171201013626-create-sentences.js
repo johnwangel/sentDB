@@ -14,9 +14,8 @@ module.exports = {
         unique: true
       },
       coded: {
-        type: Sequelize.TEXT,
+        type: Sequelize.JSONB,
         allowNull: false,
-        unique: true
       },
       complexity_id: {
         type: Sequelize.INTEGER,

@@ -1,7 +1,7 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
   var prepositions = sequelize.define('prepositions', {
-    word: DataTypes.STRING
+    word: DataTypes.STRING,
   });
   return prepositions;
 };

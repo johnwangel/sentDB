@@ -5,7 +5,8 @@ module.exports = (sequelize, DataTypes) => {
     type_id: DataTypes.INTEGER,
     comptype_id: DataTypes.INTEGER,
     altcomp: DataTypes.STRING,
-    altsup: DataTypes.STRING
+    altsup: DataTypes.STRING,
+    category: DataTypes.STRING,
   });
   Adjectives.associate = function(models) {
     Adjectives.belongsTo(models.adj_comparison_types, {foreignKey: 'comptype_id'});

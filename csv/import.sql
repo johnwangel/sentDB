@@ -6,7 +6,7 @@ COPY adjective_types(type,"createdAt","updatedAt")
 FROM '/Users/johnatkins/MyProjects/sentDB/csv/adjective_types.csv'
 DELIMITER ',' CSV HEADER;
 
-COPY adjectives(word,type_id,comptype_id,altcomp,altsup,"createdAt","updatedAt")
+COPY adjectives(word,type_id,comptype_id,altcomp,altsup,category,"createdAt","updatedAt")
 FROM '/Users/johnatkins/MyProjects/sentDB/csv/adjectives.csv'
 DELIMITER ',' CSV HEADER;
 
@@ -14,7 +14,7 @@ COPY adverb_types(type,"createdAt","updatedAt")
 FROM '/Users/johnatkins/MyProjects/sentDB/csv/adverb_types.csv'
 DELIMITER ',' CSV HEADER;
 
-COPY adverbs(word,type_id,"createdAt","updatedAt")
+COPY adverbs(word,type_id,category,"createdAt","updatedAt")
 FROM '/Users/johnatkins/MyProjects/sentDB/csv/adverbs.csv'
 DELIMITER ',' CSV HEADER;
 
@@ -22,7 +22,7 @@ COPY articles(word,"createdAt","updatedAt")
 FROM '/Users/johnatkins/MyProjects/sentDB/csv/articles.csv'
 DELIMITER ',' CSV HEADER;
 
-COPY interjections(word,"createdAt","updatedAt")
+COPY interjections(word,category,"createdAt","updatedAt")
 FROM '/Users/johnatkins/MyProjects/sentDB/csv/interjections.csv'
 DELIMITER ',' CSV HEADER;
 
@@ -58,14 +58,22 @@ COPY pronouns_others(word,type,number_id,"createdAt","updatedAt")
 FROM '/Users/johnatkins/MyProjects/sentDB/csv/pronouns_others.csv'
 DELIMITER ',' CSV HEADER;
 
-COPY verbs(word,is_aux,is_active,is_passive,tense_pres3ps,tense_past1ps,tense_past2ps,tense_past3ps,tense_past1pp,tense_past2pp,tense_past3pp,past_part,"createdAt","updatedAt")
+COPY verbs(word,is_aux,is_active,is_passive,tense_pres3ps,tense_past1ps,tense_past2ps,tense_past3ps,tense_past1pp,tense_past2pp,tense_past3pp,past_part,category,"createdAt","updatedAt")
 FROM '/Users/johnatkins/MyProjects/sentDB/csv/verbs.csv'
 DELIMITER ',' CSV HEADER;
 
-COPY nouns(word,"isPlural",plural,"createdAt","updatedAt")
+COPY nouns(word,"isPlural",plural,category,"createdAt","updatedAt")
 FROM '/Users/johnatkins/MyProjects/sentDB/csv/nouns.csv'
 DELIMITER ',' CSV HEADER;
 
 COPY stamps(title,pos,value,description,"createdAt","updatedAt")
 FROM '/Users/johnatkins/MyProjects/sentDB/csv/stamps.csv'
+DELIMITER ',' CSV HEADER;
+
+COPY sentence_complexity(complexity,"createdAt","updatedAt")
+FROM '/Users/johnatkins/MyProjects/sentDB/csv/sentence_complexity.csv'
+DELIMITER ',' CSV HEADER;
+
+COPY sentences(words,coded,complexity_id,keywords,"createdAt","updatedAt")
+FROM '/Users/johnatkins/MyProjects/sentDB/csv/sentences.csv'
 DELIMITER ',' CSV HEADER;

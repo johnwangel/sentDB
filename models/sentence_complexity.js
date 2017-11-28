@@ -4,7 +4,7 @@ module.exports = (sequelize, DataTypes) => {
     complexity: DataTypes.STRING
   });
   Sentence_complexity.associate = function(models) {
-      Sentence_complexity.hasMany(models.sentences, {foreignKey: 'type_id'});
+      Sentence_complexity.hasMany(models.sentences, {foreignKey: 'id'});
    };
   return Sentence_complexity;
 };
