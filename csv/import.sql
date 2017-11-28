@@ -65,3 +65,7 @@ DELIMITER ',' CSV HEADER;
 COPY nouns(word,"isPlural",plural,"createdAt","updatedAt")
 FROM '/Users/johnatkins/MyProjects/sentDB/csv/nouns.csv'
 DELIMITER ',' CSV HEADER;
+
+COPY stamps(title,pos,value,description,"createdAt","updatedAt")
+FROM '/Users/johnatkins/MyProjects/sentDB/csv/stamps.csv'
+DELIMITER ',' CSV HEADER;

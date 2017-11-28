@@ -14,6 +14,8 @@ const bcrypt = require('bcrypt');
 const Games = db.games;
 const Users = db.users;
 
+const Stamps = db.stamps;
+
 const AdjComp = db.adj_comparison_types;
 const AdjType = db.adjective_types;
 const Adj = db.adjectives;
@@ -180,8 +182,29 @@ app.get('/api/sentence', (req, res) => {
   res.json(mySent);
 });
 
-app.get('/api/store', (req, res) => {
-  res.json(myStore);
+app.get('/api/canteen', (req, res) => {
+  Stamps.findAll()
+  .then( response => {
+    res.json(response)
+  })
+});
+
+app.get('/api/init_stamps', (req, res) => {
+  Stamps.findAndCountAll()
+  .then( count => {
+    let len = count.count;
+    p1 = Stamps.findById(parseInt(Math.random() * (len - 2) + 2))
+    p2 = Stamps.findById(parseInt(Math.random() * (len - 2) + 2))
+    p3 = Stamps.findById(parseInt(Math.random() * (len - 2) + 2))
+    p4 = Stamps.findById(parseInt(Math.random() * (len - 2) + 2))
+    p5 = Stamps.findById(parseInt(Math.random() * (len - 2) + 2))
+
+    Promise.all([p1, p2, p3, p4, p5])
+    .then( result => {
+      res.json(result);
+    })
+
+  })
 });
 
 app.get('/api/random', (req, res) => {
