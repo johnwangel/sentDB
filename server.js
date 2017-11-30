@@ -67,6 +67,15 @@ app.use(passport.session());
 var jsonParser = bodyParser.json()
 var urlencodedParser = bodyParser.urlencoded({ extended: false })
 
+
+app.post('/api/get_stamp', jsonParser, (req, res) => {
+  Stamps.findById(req.body.id)
+  .then( response => {
+    res.json(response);
+  })
+
+})
+
 app.get('/api/logout', jsonParser, (req, res) => {
   req.logout()
   req.session.destroy();
