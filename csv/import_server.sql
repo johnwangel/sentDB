@@ -77,7 +77,3 @@ DELIMITER ',' CSV HEADER;
 COPY sentences(words,coded,complexity_id,keywords,"createdAt","updatedAt")
 FROM '/srv/sentDB/csv/sentences.csv'
 DELIMITER ',' CSV HEADER;
-
-COPY sentences(words,coded,complexity_id,keywords,"createdAt","updatedAt")
-FROM '/srv/sentDB/csv/sentences.csv'
-DELIMITER ',' CSV HEADER;

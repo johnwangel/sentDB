@@ -5,6 +5,7 @@ const sequelize = require('sequelize');
 const PORT = process.env.PORT || 3000;
 const fs = require('fs');
 const passport = require('passport');
+const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const RedisStore = require('connect-redis')(session);
 const db = require('./models');
@@ -52,6 +53,7 @@ require('./passport')();
 
 app.use(express.static('public'));
 
+app.use(cookieParser());
 app.use(
   session({
     store: new RedisStore(),
@@ -106,7 +108,7 @@ app.post('/api/register', jsonParser, (req, res) => {
 app.get('/api/auth', jsonParser, (req, res) => {
   let id = req.user ? req.user.id : null;
   let username = req.user ? req.user.username : null;
-  res.json({id, username })
+  res.json({id, usernafme })
 })
 
 //create and respond with new user
