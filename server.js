@@ -106,9 +106,12 @@ app.post('/api/register', jsonParser, (req, res) => {
 });
 
 app.get('/api/auth', jsonParser, (req, res) => {
-  let id = req.user ? req.user.id : null;
+  // let id = req.user ? req.user.id : null;
+  console.log("PASSPORT ID", req.session.passport.user)
+
+  let id = req.session.passport.user ? req.session.passport.user : null;
   let username = req.user ? req.user.username : null;
-  res.json({id, usernafme })
+  res.json({id, username })
 })
 
 //create and respond with new user
@@ -178,11 +181,11 @@ app.post('/api/get_games', jsonParser, (req, res) => {
 
 app.get('/api/newGame', (req, res) => {
   Games.create({
-    user_id: req.user.id,
+    user_id: req.session.passport.user,
     game_state: { game: {} },
   })
   .then(game => {
-      res.json(game);
+      res.json(game.dataValues);
     })
   .catch(err => {
       console.log(err);
