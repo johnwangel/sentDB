@@ -11,6 +11,7 @@ const RedisStore = require('connect-redis')(session);
 const db = require('./models');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
+const jsonwebtoken = require("jsonwebtoken");
 
 const Games = db.games;
 const Users = db.users;
@@ -69,6 +70,21 @@ app.use(
   })
 );
 
+app.use(function(req, res, next){
+  if (req.headers && req.headers.authorization && req.headers.authorization.split(' ')[0] === 'JWT'){
+    jsonwebtoken.verify(req.headers.authorization.split(' ')[1], 'RESTFULAPIs', function(err, decode){
+      if (err) {
+        req.user = undefined;
+      }
+      req.user = decode;
+      next();
+    });
+  } else {
+    req.user = undefined;
+    next();
+  }
+});
+
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -113,25 +129,43 @@ app.post('/api/register', jsonParser, (req, res) => {
 
 app.get('/api/auth', jsonParser, (req, res) => {
   // let id = req.user ? req.user.id : null;
-  console.log("PASSPORT ID", req.session.passport.user)
-
-  let id = req.session.passport.user ? req.session.passport.user : null;
-  let username = req.user ? req.user.username : null;
-  res.json({id, username })
+  // console.log("PASSPORT ID", req.session.passport.user)
+  // let id = req.session.passport.user ? req.session.passport.user : null;
+  // let username = req.user ? req.user.username : null;
+  // res.json({id, username })
+  if (req.user){
+    res.json( { id: req.user } )
+  } else {
+    return res.status(401).json({ message: "Unauthorized user!" });
+  }
 })
+
 
 //create and respond with new user
 app.post('/api/login', jsonParser, (req, res) => {
-  passport.authenticate('local', (err, user) => {
-      if (err) return res.status(500).json({ err });
-      if (!user) return res.status(401).json({ message: 'invalid' });
-
-      req.logIn( user, (err) => {
-        if (err) return res.json({ err });
-        return res.status(200).json(user);
-      });
-  })(req, res);
+  Users.findOne({where: { username: req.body.username }})
+  .then( user => {
+    if (!user) {
+      res.status(401).json({ message: 'Authentication failed. User not found.'})
+    } else {
+      if(bcrypt.compareSync(req.body.password, user.password)){
+        return res.json({ token: jsonwebtoken.sign( { id: user.id, username: user.username}, 'RESTFULAPIs')})
+      } else {
+        res.status(401).json({ message: 'Authentication failed. Wrong password.'});
+      }
+    }
+  })
 });
+  // passport.authenticate('local', (err, user) => {
+  //     if (err) return res.status(500).json({ err });
+  //     if (!user) return res.status(401).json({ message: 'invalid' });
+
+  //     req.logIn( user, (err) => {
+  //       if (err) return res.json({ err });
+  //       // return res.status(200).json(user);
+  //     });
+  // })(req, res);
+
 
 app.post('/api/active_game', jsonParser, (req, res) => {
   let gameID = req.body.game_id;
@@ -167,7 +201,7 @@ app.post('/api/save_game', jsonParser, (req, res) => {
 })
 
 app.post('/api/get_games', jsonParser, (req, res) => {
-  Games.findAll( {where : { user_id: req.body.user_id}} )
+  Games.findAll( {where : { user_id: req.user.id}} )
   .then( response => {
       let gameArray=[];
       response.forEach( game => {
@@ -187,7 +221,7 @@ app.post('/api/get_games', jsonParser, (req, res) => {
 
 app.get('/api/newGame', (req, res) => {
   Games.create({
-    user_id: req.session.passport.user,
+    user_id: req.user.id,
     game_state: { game: {} },
   })
   .then(game => {
